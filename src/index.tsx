@@ -4,6 +4,7 @@ import {createGlobalStyle, ThemeProvider} from 'styled-components';
 import {RecoilRoot} from 'recoil';
 import App from './App';
 import {theme} from './theme';
+import Header from './Components/Header';
 
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400&display=swap');
@@ -79,6 +80,7 @@ root.render(
     <RecoilRoot>
       <ThemeProvider theme={theme}>
         <GlobalStyle />
+        <Header />
         <App />
       </ThemeProvider>
     </RecoilRoot>
