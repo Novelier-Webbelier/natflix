@@ -12,13 +12,12 @@
 
 ## Stacks in this repo.
 
-  - ReactJS
-  - Styled Components
-  - Recoil
-  - React Query
-  - React Router DOM
-  - Apex Charts
-  - React Spring
-  - TypeScript
-  - Firebase
-
+- ReactJS
+- Styled Components
+- Recoil
+- React Query
+- React Router DOM
+- Apex Charts
+- React Spring
+- TypeScript
+- Firebase
