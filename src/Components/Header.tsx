@@ -119,15 +119,15 @@ const navigationVariants = {
     transition: {
       type: "spring",
       duration: 0.2
-    },
+    }
   },
   scroll: {
     backgroundColor: "rgba(0, 0, 0, 1)",
     transition: {
       type: "spring",
       duration: 0.2
-    },
-  },
+    }
+  }
 };
 
 const inputVariants = {
@@ -150,7 +150,7 @@ const inputVariants = {
       type: "spring",
       duration: 0.4
     }
-  },
+  }
 };
 
 const iconVariants = {
@@ -169,7 +169,7 @@ const iconVariants = {
       type: "spring",
       duration: 0.4
     }
-  },
+  }
 };
 
 function Header() {

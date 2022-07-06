@@ -4,6 +4,7 @@ import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { RecoilRoot } from "recoil";
 import App from "./App";
 import { theme } from "./theme";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400&display=swap');
@@ -70,6 +71,8 @@ a {
 }
 `;
 
+const client = new QueryClient();
+
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
@@ -77,8 +80,10 @@ const root = ReactDOM.createRoot(
 root.render(
   <RecoilRoot>
     <ThemeProvider theme={theme}>
-      <GlobalStyle />
-      <App />
+      <QueryClientProvider client={client}>
+        <GlobalStyle />
+        <App />
+      </QueryClientProvider>
     </ThemeProvider>
   </RecoilRoot>
 );
