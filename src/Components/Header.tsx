@@ -1,20 +1,18 @@
 import styled from "styled-components";
-import { motion } from "framer-motion";
+import { motion, useAnimation, useViewportScroll } from "framer-motion";
 import { Link, useMatch } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-const Navigation = styled.nav`
+const Navigation = styled(motion.nav)`
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: fixed;
   width: 100%;
   top: 0;
-  background-color: black;
   font-size: 14px;
   height: 80px;
   padding: 20px 60px;
-  color: white;
 `;
 
 const Column = styled.div`
@@ -76,6 +74,7 @@ const SearchInput = styled(motion.input)`
   padding: 10px 15px;
   padding-left: 40px;
   width: 22rem;
+  background-color: rgba(0, 0, 0, 0);
   color: white;
   border-radius: 5px;
   outline: none;
@@ -87,8 +86,6 @@ const SearchInput = styled(motion.input)`
     color: ${props => props.theme.white.darker};
     font-weight: 300;
   }
-
-  background-color: ${props => props.theme.black.deepDark};
 `;
 
 const Circle = styled(motion.div)`
@@ -107,52 +104,112 @@ const logoVariants = {
     fillOpacity: 1
   },
   active: {
-    fillOpacity: [0, 1],
+    fillOpacity: [1, 0, 1, 0, 1],
     transition: {
+      type: "linear",
       repeat: Infinity,
-      duration: 0.4
+      duration: 0.5
     }
   }
 };
 
-const searchInputVariants = {
+const navigationVariants = {
+  top: {
+    backgroundColor: "rgba(0, 0, 0, 0)",
+    transition: {
+      type: "spring",
+      duration: 0.2
+    },
+  },
+  scroll: {
+    backgroundColor: "rgba(0, 0, 0, 1)",
+    transition: {
+      type: "spring",
+      duration: 0.2
+    },
+  },
+};
+
+const inputVariants = {
   initial: {
     scaleX: 0,
-    opacity: 0,
+    opacity: 0
   },
-  animate: (searchOpened: boolean) => ({
-    scaleX: searchOpened ? 1 : 0,
+  selected: {
+    scaleX: 1,
     opacity: 1,
     transition: {
       type: "spring",
-      bounce: 0.2,
-      duration: 0.5
+      duration: 0.4
     }
-  })
-};
-
-const searchIconVariants = {
-  animate: (searchOpened: boolean) => ({
-    x: searchOpened ? -345 : 0,
+  },
+  unSelected: {
+    scaleX: 0,
+    opacity: 0,
     transition: {
       type: "spring",
-      duration: 0.4,
+      duration: 0.4
     }
-  })
+  },
+};
+
+const iconVariants = {
+  selected: {
+    x: -345,
+    scaleY: [0.5, 1],
+    transition: {
+      type: "spring",
+      duration: 0.4
+    }
+  },
+  unSelected: {
+    x: 0,
+    scaleY: [0.5, 1],
+    transition: {
+      type: "spring",
+      duration: 0.4
+    }
+  },
 };
 
 function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const homeMatch = useMatch("");
   const tvMatch = useMatch("tv");
+  const inputAnimation = useAnimation();
+  const iconAnimation = useAnimation();
+  const navigationAnimation = useAnimation();
+  const { scrollY } = useViewportScroll();
 
   const toggleSearchOpened = () =>
     setSearchOpen(prev => {
+      if (searchOpen) {
+        inputAnimation.start("unSelected");
+        iconAnimation.start("unSelected");
+      } else {
+        inputAnimation.start("selected");
+        iconAnimation.start("selected");
+      }
+
       return !prev;
     });
 
+  useEffect(() => {
+    scrollY.onChange(() => {
+      if (scrollY.get() > 80) {
+        navigationAnimation.start("scroll");
+      } else {
+        navigationAnimation.start("top");
+      }
+    });
+  }, [scrollY]);
+
   return (
-    <Navigation>
+    <Navigation
+      variants={navigationVariants}
+      initial="top"
+      animate={navigationAnimation}
+    >
       <Column>
         <Logo
           variants={logoVariants}
@@ -186,16 +243,14 @@ function Header() {
       <Column>
         <Search>
           <SearchInput
-            variants={searchInputVariants}
-            custom={searchOpen}
+            variants={inputVariants}
             initial="initial"
-            animate="animate"
+            animate={inputAnimation}
             placeholder="Search for movie or tv show..."
           />
           <motion.svg
-            variants={searchIconVariants}
-            custom={searchOpen}
-            animate="animate"
+            variants={iconVariants}
+            animate={iconAnimation}
             onClick={toggleSearchOpened}
             fill="currentColor"
             viewBox="0 0 20 20"
