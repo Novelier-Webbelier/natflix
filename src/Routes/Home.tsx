@@ -7,6 +7,7 @@ import { useState } from "react";
 
 const Wrapper = styled.div`
   background-color: black;
+  padding-bottom: 200px;
 `;
 
 const Loader = styled.div`
@@ -53,28 +54,54 @@ const Row = styled(motion.div)`
   width: 100%;
 `;
 
-const Box = styled(motion.div) <IBgPhotoProps>`
+const Box = styled(motion.div)<IBgPhotoProps>`
   background-color: white;
   height: 200px;
   color: red;
   font-size: 66px;
+  cursor: pointer;
+  border-radius: 5px;
   background-size: center;
   background-position: center center;
   background-image: url(${props => props.bgPhoto});
+
+  &:first-child {
+    transform-origin: center left;
+  }
+
+  &:last-child {
+    transform-origin: center right;
+  }
 `;
 
 const rowVariants = {
   hidden: {
     x: window.outerWidth + 500,
-    opacity: 0,
+    opacity: 0
   },
   visible: {
     x: 0,
-    opacity: 1,
+    opacity: 1
   },
   exit: {
     x: -window.outerWidth - 5,
-    opacity: 0,
+    opacity: 0
+  }
+};
+
+const boxVariants = {
+  normal: {
+    scale: 1,
+    opacity: 0
+  },
+  hover: {
+    scale: [1, 0.9, 2.2, 2],
+    y: -50,
+    opacity: [1, 0.5, 0.9, 1],
+    boxShadow: "0px 0px 30px 10px rgba(0, 0, 0, 1)",
+    transition: {
+      delay: 0.3
+    }
   }
 };
 
@@ -97,14 +124,11 @@ function Home() {
       toggleLeaving();
       const totalMovie = movieData.results.length - 1;
       const maxIndex = Math.floor(totalMovie / offset) - 1;
-      console.log(maxIndex);
       setIndex(prev => (prev === maxIndex ? 0 : prev + 1));
     }
   };
 
   const toggleLeaving = () => setLeaving(prev => !prev);
-
-  console.log(movieData?.results.slice(1));
 
   return (
     <Wrapper>
@@ -136,7 +160,10 @@ function Home() {
                   .slice(offset * index, offset * index + offset)
                   .map(item => (
                     <Box
+                      variants={boxVariants}
                       key={item.id}
+                      whileHover="hover"
+                      initial="normal"
                       bgPhoto={makeImagePath(item.backdrop_path, "w500")}
                     />
                   ))}
