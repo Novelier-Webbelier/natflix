@@ -63,7 +63,8 @@ const Box = styled(motion.div) <IBgPhotoProps>`
   cursor: pointer;
   border-radius: 5px;
   background-size: center;
-  background-position: center center;
+  background-position: bottom center;
+  transform-origin: center center;
   background-image: url(${props => props.bgPhoto});
 
   &:first-child {
@@ -92,11 +93,37 @@ const Info = styled(motion.div)`
 const BoxInfo = styled(motion.div)`
   position: absolute;
   width: 70vw;
-  height: 70vh;
+  height: 60vh;
   left: 0;
   right: 0;
-  borderradius: 5;
   margin: 0 auto;
+  border-radius: 15px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: column;
+  background-color: ${props => props.theme.black.lighter};
+`;
+
+const BoxInfoImg = styled(motion.img)`
+  width: 101%;
+  height: 60%;
+  margin-top: -1px;
+  background-size: cover;
+  background-position: center center;
+`;
+
+const BoxInfoTitle = styled(motion.h3)`
+  width: 100%;
+  padding-left: 30px;
+  text-align: left;
+  font-size: 27px;
+  position: relative;
+  top: -55px;
+  font-weight: 900;
+  letter-spacing: 1.3px;
+  color: ${props => props.theme.white.lighter};
 `;
 
 const Overlay = styled(motion.div)`
@@ -105,6 +132,15 @@ const Overlay = styled(motion.div)`
   width: 100%;
   height: 100%;
   background-color: rgb(0, 0, 0);
+`;
+
+const BoxOverview = styled.div`
+  margin-top: -33px;
+  padding: 20px;
+  letter-spacing: .9px;
+  font-weight: 100;
+  background-color: inherit;
+  color: ${props => props.theme.white.darker};
 `;
 
 const rowVariants = {
@@ -135,7 +171,7 @@ const boxVariants = {
     zIndex: 99,
     transition: {
       type: "spring",
-      delay: 0.3,
+      delay: 0.2,
       duration: 0.5
     }
   }
@@ -146,7 +182,7 @@ const infoVariants = {
     opacity: 1,
     transition: {
       type: "spring",
-      delay: 0.6,
+      delay: 0.4,
       duration: 0.5
     }
   }
@@ -195,9 +231,14 @@ function Home() {
     navigate(`/movie/${movieId}`);
   };
 
-  const onOverlayClicked = () => {
-    navigate("/");
-  };
+  const onOverlayClicked = () => navigate("/");
+  const clickedMovie =
+    bigMovieMatch?.params.movieId &&
+    movieData?.results.find(
+      movie => movie.id === +bigMovieMatch?.params.movieId
+    );
+
+  console.log(clickedMovie);
 
   return (
     <Wrapper>
@@ -222,7 +263,7 @@ function Home() {
                 exit="exit"
                 transition={{
                   type: "tween",
-                  duration: 0.5
+                  duration: 0.3
                 }}
               >
                 {movieData?.results
@@ -259,20 +300,34 @@ function Home() {
                   initial="initial"
                   animate="animate"
                   exit="exit"
-                  transition={{ type: "tween", duration: 0.4 }}
+                  transition={{ type: "tween", duration: 0.2 }}
                   onClick={onOverlayClicked}
                 />
                 <BoxInfo
                   style={{
-                    top: scrollY.get() + 70,
+                    top: scrollY.get() + 70
                   }}
                   layoutId={bigMovieMatch.params.movieId}
                   transition={{
                     type: "spring",
                     bounce: 0.5,
-                    duration: 0.8
+                    duration: 0.4
                   }}
-                />
+                >
+                  {clickedMovie && (
+                    <>
+                      <BoxInfoImg
+                        style={{
+                          backgroundImage: `linear-gradient(transparent, black), url(${makeImagePath(
+                            clickedMovie.backdrop_path
+                          )})`
+                        }}
+                      />
+                      <BoxInfoTitle>{clickedMovie.title}</BoxInfoTitle>
+                      <BoxOverview>{clickedMovie.overview}</BoxOverview>
+                    </>
+                  )}
+                </BoxInfo>
               </>
             ) : null}
           </AnimatePresence>
