@@ -54,10 +54,10 @@ const Row = styled(motion.div)`
   width: 100%;
 `;
 
-const Box = styled(motion.div)<IBgPhotoProps>`
+const Box = styled(motion.div) <IBgPhotoProps>`
   background-color: white;
   height: 200px;
-  color: red;
+  color: white;
   font-size: 66px;
   cursor: pointer;
   border-radius: 5px;
@@ -74,33 +74,61 @@ const Box = styled(motion.div)<IBgPhotoProps>`
   }
 `;
 
+const Info = styled(motion.div)`
+  padding: 20px;
+  opacity: 0;
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  background-color: ${props => props.theme.black.darker};
+
+  h4 {
+    text-align: center;
+    font-size: 15px;
+  }
+`;
+
 const rowVariants = {
   hidden: {
     x: window.outerWidth + 500,
-    opacity: 0
+    opacity: 0,
   },
   visible: {
     x: 0,
-    opacity: 1
+    opacity: 1,
   },
   exit: {
     x: -window.outerWidth - 5,
-    opacity: 0
+    opacity: 0,
   }
 };
 
 const boxVariants = {
   normal: {
     scale: 1,
-    opacity: 0
   },
   hover: {
     scale: [1, 0.9, 2.2, 2],
     y: -50,
     opacity: [1, 0.5, 0.9, 1],
     boxShadow: "0px 0px 30px 10px rgba(0, 0, 0, 1)",
+    borderRadius: 0,
+    zIndex: 99,
     transition: {
-      delay: 0.3
+      type: "spring",
+      delay: 0.3,
+      duration: .5,
+    }
+  }
+};
+
+const infoVariants = {
+  hover: {
+    opacity: 1,
+    transition: {
+      type: "spring",
+      delay: 0.6,
+      duration: .5,
     }
   }
 };
@@ -158,14 +186,18 @@ function Home() {
                 {movieData?.results
                   .slice(1)
                   .slice(offset * index, offset * index + offset)
-                  .map(item => (
+                  .map(movie => (
                     <Box
                       variants={boxVariants}
-                      key={item.id}
+                      key={movie.id}
                       whileHover="hover"
                       initial="normal"
-                      bgPhoto={makeImagePath(item.backdrop_path, "w500")}
-                    />
+                      bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
+                    >
+                      <Info variants={infoVariants}>
+                        <h4>{movie.title}</h4>
+                      </Info>
+                    </Box>
                   ))}
               </Row>
             </AnimatePresence>
