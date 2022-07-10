@@ -2,8 +2,8 @@ import { useQuery } from "react-query";
 import styled from "styled-components";
 import { getMovies, IGetMoviesResult } from "../api";
 import { makeImagePath } from "../untils";
-import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { AnimatePresence, motion, useViewportScroll } from "framer-motion";
+import { useEffect, useState } from "react";
 import { useMatch, useNavigate } from "react-router-dom";
 
 const Wrapper = styled.div`
@@ -93,12 +93,18 @@ const BoxInfo = styled(motion.div)`
   position: absolute;
   width: 70vw;
   height: 70vh;
-  background-color: red;
-  top: 50px;
-  left: 0px;
-  right: 0px;
+  left: 0;
+  right: 0;
   borderradius: 5;
   margin: 0 auto;
+`;
+
+const Overlay = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(0, 0, 0);
 `;
 
 const rowVariants = {
@@ -146,6 +152,18 @@ const infoVariants = {
   }
 };
 
+const overlayVariants = {
+  initial: {
+    opacity: 0
+  },
+  animate: {
+    opacity: 0.8
+  },
+  exit: {
+    opacity: 0
+  }
+};
+
 interface IBgPhotoProps {
   bgPhoto: string;
 }
@@ -155,6 +173,7 @@ const offset = 6;
 function Home() {
   const navigate = useNavigate();
   const bigMovieMatch = useMatch("/movie/:movieId");
+  const { scrollY } = useViewportScroll();
   const { isLoading: isMovieLoading, data: movieData } =
     useQuery<IGetMoviesResult>(["movies", "nowPlaying"], getMovies);
 
@@ -174,6 +193,10 @@ function Home() {
   const toggleLeaving = () => setLeaving(prev => !prev);
   const onBoxClicked = (movieId: number) => {
     navigate(`/movie/${movieId}`);
+  };
+
+  const onOverlayClicked = () => {
+    navigate("/");
   };
 
   return (
@@ -214,6 +237,11 @@ function Home() {
                       whileHover="hover"
                       initial="normal"
                       bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
+                      transition={{
+                        type: "spring",
+                        bounce: 0.2,
+                        duration: 0.8
+                      }}
                     >
                       <Info variants={infoVariants}>
                         <h4>{movie.title}</h4>
@@ -224,7 +252,29 @@ function Home() {
             </AnimatePresence>
           </Slider>
           <AnimatePresence>
-            {bigMovieMatch ? (<BoxInfo layoutId={bigMovieMatch.params.movieId} />) : null}
+            {bigMovieMatch ? (
+              <>
+                <Overlay
+                  variants={overlayVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={{ type: "tween", duration: 0.4 }}
+                  onClick={onOverlayClicked}
+                />
+                <BoxInfo
+                  style={{
+                    top: scrollY.get() + 70,
+                  }}
+                  layoutId={bigMovieMatch.params.movieId}
+                  transition={{
+                    type: "spring",
+                    bounce: 0.5,
+                    duration: 0.8
+                  }}
+                />
+              </>
+            ) : null}
           </AnimatePresence>
         </>
       )}
