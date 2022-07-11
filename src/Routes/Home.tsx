@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { getMovies, IGetMoviesResult } from "../api";
 import { makeImagePath } from "../untils";
 import { AnimatePresence, motion, useViewportScroll } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useMatch, useNavigate } from "react-router-dom";
 
 const Wrapper = styled.div`
@@ -237,8 +237,6 @@ function Home() {
     movieData?.results.find(
       movie => movie.id === +bigMovieMatch?.params.movieId
     );
-
-  console.log(clickedMovie);
 
   return (
     <Wrapper>
